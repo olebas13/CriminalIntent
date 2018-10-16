@@ -12,6 +12,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TimePicker;
 
 import java.util.Calendar;
@@ -26,6 +28,8 @@ public class TimePickerFragment extends DialogFragment {
     private TimePicker mTimePicker;
     private Calendar mCalendar;
 
+    private Button mTimePickerOkButton;
+
     public static TimePickerFragment newInstance(Date date) {
 
         Bundle args = new Bundle();
@@ -37,7 +41,7 @@ public class TimePickerFragment extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
 
         mCalendar = Calendar.getInstance();
@@ -45,7 +49,7 @@ public class TimePickerFragment extends DialogFragment {
         int hour = mCalendar.get(Calendar.HOUR_OF_DAY);
         int minute = mCalendar.get(Calendar.MINUTE);
 
-        View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_time, null);
+        View v = inflater.inflate(R.layout.dialog_time, container, false);
 
         mTimePicker = (TimePicker) v.findViewById(R.id.dialog_time_picker);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -56,36 +60,38 @@ public class TimePickerFragment extends DialogFragment {
             mTimePicker.setCurrentMinute(minute);
         }
 
-        return new AlertDialog.Builder(getActivity())
-                .setView(v)
-                .setTitle(R.string.time_picker_title)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int hour, minute;
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                            hour = mTimePicker.getHour();
-                            minute = mTimePicker.getMinute();
-                        } else {
-                            hour = mTimePicker.getCurrentHour();
-                            minute = mTimePicker.getCurrentMinute();
-                        }
-                        mCalendar.set(Calendar.HOUR_OF_DAY, hour);
-                        mCalendar.set(Calendar.MINUTE, minute);
+        mTimePickerOkButton = (Button) v.findViewById(R.id.dialog_time_ok_button);
+        mTimePickerOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int hour, minute;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    hour = mTimePicker.getHour();
+                    minute = mTimePicker.getMinute();
+                } else {
+                    hour = mTimePicker.getCurrentHour();
+                    minute = mTimePicker.getCurrentMinute();
+                }
+                mCalendar.set(Calendar.HOUR_OF_DAY, hour);
+                mCalendar.set(Calendar.MINUTE, minute);
 
-                        sendResult(Activity.RESULT_OK, mCalendar.getTime());
-                    }
-                })
-                .create();
+                sendResult(Activity.RESULT_OK, mCalendar.getTime());
+            }
+        });
+        return v;
     }
 
     private void sendResult(int resultCode, Date date) {
-        if (getTargetFragment() == null) {
-            return;
-        }
+        Intent data = new Intent();
+        data.putExtra(EXTRA_TIME, date);
 
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_TIME, date);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
+        if (getTargetFragment() == null) {
+            Activity hostingActivity = getActivity();
+            hostingActivity.setResult(resultCode, data);
+            hostingActivity.finish();
+        } else {
+            dismiss();
+            getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, data);
+        }
     }
 }

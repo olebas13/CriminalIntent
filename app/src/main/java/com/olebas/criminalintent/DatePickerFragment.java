@@ -11,6 +11,8 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
 
 import java.util.Calendar;
@@ -24,6 +26,7 @@ public class DatePickerFragment extends DialogFragment {
     private static final String ARG_DATE = "date";
 
     private DatePicker mDatePicker;
+    private Button mDatePickerOkButton;
 
     public static DatePickerFragment newInstance(Date date) {
         Bundle args = new Bundle();
@@ -36,7 +39,7 @@ public class DatePickerFragment extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Date date = (Date) getArguments().getSerializable(ARG_DATE);
 
         Calendar calendar = Calendar.getInstance();
@@ -45,34 +48,36 @@ public class DatePickerFragment extends DialogFragment {
         int month = calendar.get(Calendar.MONTH);
         int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        View v = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_date, null);
+        View v = inflater.inflate(R.layout.dialog_date, container, false);
 
         mDatePicker = (DatePicker) v.findViewById(R.id.dialog_date_picker);
         mDatePicker.init(year, month, day, null);
 
-        return new AlertDialog.Builder(getActivity())
-                .setView(v)
-                .setTitle(R.string.date_picker_title)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        int year = mDatePicker.getYear();
-                        int month = mDatePicker.getMonth();
-                        int day = mDatePicker.getDayOfMonth();
-                        Date date = new GregorianCalendar(year, month, day).getTime();
-                        sendResult(Activity.RESULT_OK, date);
-                    }
-                })
-                .create();
+        mDatePickerOkButton = (Button) v.findViewById(R.id.dialog_date_ok_button);
+        mDatePickerOkButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int year = mDatePicker.getYear();
+                int month = mDatePicker.getMonth();
+                int day = mDatePicker.getDayOfMonth();
+                Date date = new GregorianCalendar(year, month, day).getTime();
+                sendResult(Activity.RESULT_OK, date);
+            }
+        });
+        return v;
     }
 
     private void sendResult(int resultCode, Date date) {
-        if (getTargetFragment() == null) {
-            return;
-        }
+        Intent data = new Intent();
+        data.putExtra(EXTRA_DATE, date);
 
-        Intent intent = new Intent();
-        intent.putExtra(EXTRA_DATE, date);
-        getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, intent);
+        if (getTargetFragment() == null) {
+            Activity hostingActivity = getActivity();
+            hostingActivity.setResult(resultCode, data);
+            hostingActivity.finish();
+        } else {
+            dismiss();
+            getTargetFragment().onActivityResult(getTargetRequestCode(), resultCode, data);
+        }
     }
 }
