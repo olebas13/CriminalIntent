@@ -12,4 +12,9 @@
     <string name="subtitle_format">%1$d crimes</string>
     <string name="delete_crime">Delete Crime</string>
     <string name="toast_delete_crime">Crime deleted</string>
+
+    <plurals name="subtitle_plural">
+        <item quantity="one">%1$d crime</item>
+        <item quantity="other">%1$d crimes</item>
+    </plurals>
 </resources>
