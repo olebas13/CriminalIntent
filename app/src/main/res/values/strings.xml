@@ -12,6 +12,8 @@
     <string name="subtitle_format">%1$d crimes</string>
     <string name="delete_crime">Delete Crime</string>
     <string name="toast_delete_crime">Crime deleted</string>
+    <string name="empty_view_text_view">There are no crimes… yet</string>
+    <string name="empty_view_add_button">Create new crime</string>
 
     <plurals name="subtitle_plural">
         <item quantity="one">%1$d crime</item>
