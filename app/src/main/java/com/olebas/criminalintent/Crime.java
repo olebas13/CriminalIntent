@@ -11,7 +11,12 @@ public class Crime {
     private Boolean mSolved;
 
     public Crime() {
-        mId = UUID.randomUUID();
+        this(UUID.randomUUID());
+//        mSolved = false;
+    }
+
+    public Crime(UUID id) {
+        mId = id;
         mDate = new Date();
         mSolved = false;
     }
