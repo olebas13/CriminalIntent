@@ -220,6 +220,20 @@ public class CrimeFragment extends Fragment {
         mCallbacks.onCrimeUpdated(mCrime);
     }
 
+    private String getCrimeReport() {
+        String solvedString = null;
+        if (mCrime.isSolved()) {
+            solvedString = getString(R.string.crime_report_solved);
+        } else {
+            solvedString = getString(R.string.crime_report_unsolved);
+        }
+
+        String dateFormat = "EEEE, MMM dd, yyyy";
+        String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
+
+
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
