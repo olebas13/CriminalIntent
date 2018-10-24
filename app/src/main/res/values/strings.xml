@@ -25,6 +25,7 @@
     <string name="send_report">Send crime report via</string>
     <string name="crime_report_call">Call Suspect</string>
     <string name="dialog_image_title">Image of Crime</string>
+    <string name="at_sign">\@</string>
 
     <plurals name="subtitle_plural">
         <item quantity="one">%1$d crime</item>
