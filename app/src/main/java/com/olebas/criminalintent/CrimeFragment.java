@@ -24,6 +24,7 @@ import android.support.v4.content.FileProvider;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -365,6 +366,13 @@ public class CrimeFragment extends Fragment {
         CrimeLab crimeLab = CrimeLab.get(getActivity());
         crimeLab.deleteCrime(mCrime);
         mCallbacks.onCrimeUpdated(mCrime);
+
+        File file = new File(mPhotoFile.getPath());
+        if (file.exists()) {
+            file.delete();
+            Log.i("CrimeFragment", "deleteCrime photo called");
+        }
+
         Toast.makeText(getActivity(), R.string.toast_delete_crime, Toast.LENGTH_SHORT).show();
     }
 
