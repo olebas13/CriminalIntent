@@ -19,7 +19,6 @@ import android.support.v4.content.ContextCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +29,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.util.Date;
@@ -44,6 +45,9 @@ public class CrimeFragment extends Fragment {
     private static final String DIALOG_DATE = "DialogDate";
     private static final String DIALOG_TIME = "DialogTime";
 
+    private static final String DATE_FORMAT = "EEEE, MMM dd, yyyy";
+    private static final String TIME_FORMAT = "HH:mm";
+
     private static final int REQUEST_DATE = 0;
     private static final int REQUEST_TIME = 1;
     private static final int REQUEST_CONTACT = 2;
@@ -57,6 +61,8 @@ public class CrimeFragment extends Fragment {
     private Button mSuspectButton;
     private Button mReportButton;
     private Button mCallSuspectButton;
+    private ImageButton mPhotoButton;
+    private ImageView mPhotoView;
 
     private boolean mIsLargeLayout;
 
@@ -212,6 +218,10 @@ public class CrimeFragment extends Fragment {
             }
         });
 
+        mPhotoButton = (ImageButton) v.findViewById(R.id.crime_camera);
+
+        mPhotoView = (ImageView) v.findViewById(R.id.crime_photo);
+
         return v;
     }
 
@@ -296,11 +306,11 @@ public class CrimeFragment extends Fragment {
     }
 
     private void updateDate() {
-        mDateButton.setText(DateFormat.format("EEEE, MMM dd, yyyy", mCrime.getDate()).toString());
+        mDateButton.setText(DateFormat.format(DATE_FORMAT, mCrime.getDate()).toString());
     }
 
     private void updateTime() {
-        mTimeButton.setText(DateFormat.format("HH:mm", mCrime.getDate()).toString());
+        mTimeButton.setText(DateFormat.format(TIME_FORMAT, mCrime.getDate()).toString());
     }
 
     private void updateCrime() {
@@ -315,11 +325,8 @@ public class CrimeFragment extends Fragment {
             solvedString = getString(R.string.crime_report_unsolved);
         }
 
-        String dateFormat = "EEEE, MMM dd, yyyy";
-        String dateString = DateFormat.format(dateFormat, mCrime.getDate()).toString();
-
-        String timeFormat = "HH:mm";
-        String timeString = DateFormat.format(timeFormat, mCrime.getDate()).toString();
+        String dateString = DateFormat.format(DATE_FORMAT, mCrime.getDate()).toString();
+        String timeString = DateFormat.format(TIME_FORMAT, mCrime.getDate()).toString();
 
         String suspect = mCrime.getSuspect();
         if (suspect == null) {
@@ -334,7 +341,6 @@ public class CrimeFragment extends Fragment {
     }
 
     public void checkReadContactsPermission() {
-        Log.i(CRIME_FRAGMENT, "checkReadContactsPermission: start");
 
         if (ContextCompat.checkSelfPermission(getActivity(),
                 Manifest.permission.READ_CONTACTS)
@@ -348,7 +354,6 @@ public class CrimeFragment extends Fragment {
                         MY_PERMISSIONS_REQUEST_READ_CONTACTS);
             }
         } else {
-            Log.i(CRIME_FRAGMENT, "checkReadContactsPermission: called");
             callSuspect();
         }
     }
@@ -378,7 +383,6 @@ public class CrimeFragment extends Fragment {
 
         try {
             if (c == null || c.getCount() == 0) {
-                Log.i(CRIME_FRAGMENT, "callSuspect cursor null or zero");
                 return;
             }
 

@@ -16,6 +16,7 @@
         android:id="@+id/detail_fragment_container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="2.5"/>
+        android:layout_weight="2.5"
+        android:padding="16dp"/>
 
 </LinearLayout>
